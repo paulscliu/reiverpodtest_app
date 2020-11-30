@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'package:reiverpodtest_app/model/model.dart';
+import 'package:reiverpodtest_app/state/state_manager.dart';
 
 void main() {
   runApp(
@@ -8,18 +10,6 @@ void main() {
     ),
   );
 }
-
-class IncrementNotifier extends ChangeNotifier {
-  int _value = 0;
-  int get value => _value;
-
-  void increment() {
-    _value += 1;
-    notifyListeners();
-  }
-}
-
-final incrementProvider = ChangeNotifierProvider((ref) => IncrementNotifier());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -34,17 +24,30 @@ class MyApp extends StatelessWidget {
         body: Center(
           child: Consumer(
             builder: (context, watch, child) {
-              final incrementNotifier = watch(incrementProvider);
-              return Text(incrementNotifier.value.toString());
+              final responseAsyncValue = watch(photostateFuture);
+              return responseAsyncValue.map(
+                data: (value) {
+                  return ListView.builder(
+                    itemCount: value.value.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(value.value[index].url)),
+                        title: Text(value.value[index].title),
+                      );
+                    },
+                  );
+                },
+                loading: (_) => CircularProgressIndicator(),
+                error: (_) => Text(
+                  _.error.toString(),
+                  style: TextStyle(color: Colors.red),
+                ),
+              );
             },
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            context.read(incrementProvider).increment();
-          },
-          child: Icon(Icons.add),
-        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
     );
   }
