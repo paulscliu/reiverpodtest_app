@@ -1,4 +1,25 @@
-class PhotoModel {
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'model.freezed.dart';
+part 'model.g.dart';
+
+@freezed
+abstract class PhotoModel with _$PhotoModel {
+  //@JsonSerializable(explicit_to_json: true)
+  const factory PhotoModel(
+      {int albumId,
+      int id,
+      String title,
+      String url,
+      thumbnailUrl}) = _PhotoModel;
+
+  factory PhotoModel.fromJson(Map<String, dynamic> json) =>
+      _$PhotoModelFromJson(json);
+}
+
+/*class PhotoModel {
   int albumId;
   int id;
   String title;
@@ -25,3 +46,4 @@ class PhotoModel {
     return data;
   }
 }
+*/
